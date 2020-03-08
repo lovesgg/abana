@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
+	"math"
 )
 
 type User struct {
@@ -52,9 +53,35 @@ func UserGetByOpenId(openId string) (user User, err error) {
 	return user, nil
 }
 
-func UserUpdate(t *User) interface{} {
+func UserUpdate(userId int64, update User) int64 {
 	o := orm.NewOrm()
-	ret, _ := o.Update(t)
+	user := User{UserId: userId}
+	var num int64
+	if ret := o.Read(&user, "user_id"); ret == nil {
+		user.NickName = update.NickName
+		user.Province = update.Province
+		user.City = update.City
+		user.AvatarUrl = update.AvatarUrl
+		user.Gender = update.Gender
+		if num, err := o.Update(&user); err == nil {
+			return num
+		}
+	}
+	return num
+}
 
-	return ret
+func UserNearList(pageNum int) (list *[]User, err error) {
+	o := orm.NewOrm()
+	qs := o.QueryTable("user_mall_info").Filter("if_delete", 0)
+	count, _ := qs.Count()
+	pageSetNum := 10
+	pageCount := math.Ceil((float64(count) / float64(pageSetNum)))
+	if pageCount <= 0 {
+
+	}
+	users := new([]User)
+	//获取分页数据
+	_, _ = qs.Limit(pageSetNum, pageSetNum*(pageNum-1)).All(users)
+
+	return users, nil
 }

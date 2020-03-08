@@ -15,16 +15,17 @@ func RedisClient(class string) *Client {
 	Addr := ""
 	Password := ""
 	DB := 0
+
 	switch class {
-	case "order":
+	case "user":
 		Addr = beego.AppConfig.String("common_addr")
 		Password = beego.AppConfig.String("common_password")
 		DB, _ = beego.AppConfig.Int("common_db")
 		break
 	default:
-		Addr = beego.AppConfig.String("order_addr")
-		Password = beego.AppConfig.String("order_password")
-		DB, _ = beego.AppConfig.Int("order_db")
+		Addr = beego.AppConfig.String("common_addr")
+		Password = beego.AppConfig.String("common_password")
+		DB, _ = beego.AppConfig.Int("common_db")
 	}
 
 	redisClient := redis.NewClient(&redis.Options{
@@ -32,6 +33,7 @@ func RedisClient(class string) *Client {
 		Password: Password, // no password set
 		DB:       DB,       // use default DB
 	})
+	//fmt.Println(Addr, Password, DB)
 	client := &Client{
 		baseClient: redisClient,
 	}

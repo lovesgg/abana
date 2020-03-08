@@ -14,11 +14,11 @@ func init() {
 	mysqlIp := beego.AppConfig.String("mysqlurls")
 	mysqlPort := beego.AppConfig.String("mysqlport")
 	mysqlDb := beego.AppConfig.String("mysqldb")
-	dataSource := mysqlUserName + ":" + mysqlPass +"@tcp(" + mysqlIp +":" + mysqlPort +")/" + mysqlDb +"?charset=utf8"
+	dataSource := mysqlUserName + ":" + mysqlPass + "@tcp(" + mysqlIp + ":" + mysqlPort + ")/" + mysqlDb + "?charset=utf8"
 	_ = orm.RegisterDriver("mysql", orm.DRMySQL)
 	_ = orm.RegisterDataBase("default", "mysql", dataSource)
 
-	redis.RedisClient("redis")
+	redis.RedisClient("user")
 }
 
 func main() {
