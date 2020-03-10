@@ -3,7 +3,6 @@ package articleModules
 import (
 	"abana/controllers"
 	"abana/models"
-	"fmt"
 	"time"
 )
 
@@ -25,6 +24,11 @@ type searchReq struct {
 	Text string `json:"text"`
 }
 
+type addLikeReq struct {
+	ArticleId int   `json:"article_id"`
+	UserId    int64 `json:"user_id"`
+}
+
 func (c *ArticleController) Publish() {
 	var article *models.Article
 	req := &addReq{}
@@ -35,6 +39,7 @@ func (c *ArticleController) Publish() {
 	}
 
 	userId := c.Ctx.Input.GetData("user_id").(int64)
+	user, _ := models.UserGetByUserId(userId)
 
 	article = &models.Article{
 		Title:       req.Title,
@@ -47,15 +52,15 @@ func (c *ArticleController) Publish() {
 		UT:          time.Now().Unix(),
 		Type:        0,
 		Status:      1, //默认1 展示
-		Avatar:      c.Ctx.Input.GetData("avatar").(string),
-		NickName:    c.Ctx.Input.GetData("nick_name").(string),
+		Avatar:      user.AvatarUrl,
+		NickName:    user.NickName,
 	}
 
 	ret, err := models.ArticleAdd(article)
 	if err != nil {
-		fmt.Println(err)
 		c.RenderJsonErr("", "添加有误")
 	}
+	_, _ = models.UserArticleIncrNum(userId)
 
 	c.RenderJson(ret)
 }
@@ -74,4 +79,37 @@ func (c *ArticleController) Search() {
 	list, _ := models.ArticleSearch(req.Text)
 
 	c.RenderJson(list)
+}
+
+func (c *ArticleController) AddLike() {
+	var add *models.MyLike
+	req := &addLikeReq{}
+	c.GetParams(req)
+
+	userId := c.Ctx.Input.GetData("user_id").(int64)
+
+	if userId == req.UserId {
+		c.RenderJsonErr("", "收藏失败")
+	}
+
+	//先校验是否存在
+	data, _ := models.MyLikeGetById(userId, req.ArticleId)
+	if data.UserId == 0 {
+		//可添加
+		add = &models.MyLike{
+			ArticleId: req.ArticleId,
+			UserId:    userId,
+			CT:        time.Now().Unix(),
+		}
+		_, _ = models.MyLikeAdd(add)
+
+		//文章增加喜欢数
+		_, _ = models.ArticleLikeIncrNum(req.ArticleId)
+		_, _ = models.UserLikeIncrNum(userId)
+
+		c.RenderJson(1)
+	} else {
+		c.RenderJsonErr("", "已收藏")
+	}
+
 }

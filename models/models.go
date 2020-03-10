@@ -11,6 +11,8 @@ func init() {
 	orm.RegisterModel(
 		new(User),
 		new(Article),
+		new(Evaluate),
+		new(MyLike),
 	)
 }
 

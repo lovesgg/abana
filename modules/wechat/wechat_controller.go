@@ -34,6 +34,11 @@ type listReq struct {
 	Page int `json:"page"`
 }
 
+type evaluateListReq struct {
+	Page int   `json:"page"`
+	Id   int64 `json:"id"`
+}
+
 /**
 根据code获取open_id判断是否已经注册
 */
@@ -103,6 +108,15 @@ func (c *WechatController) List() {
 	req := &listReq{}
 	c.GetParams(req)
 	list, _ := models.ArticleList(req.Page, 10)
+
+	c.RenderJson(list)
+}
+
+func (c *WechatController) EvaluateList() {
+	req := &evaluateListReq{}
+	c.GetParams(req)
+
+	list, _ := models.EvaluateList(req.Page, 10, req.Id)
 
 	c.RenderJson(list)
 }

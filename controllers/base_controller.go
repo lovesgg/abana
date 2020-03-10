@@ -57,8 +57,6 @@ func (c *BaseController) Prepare() {
 	var userId int64
 	token := c.Ctx.Input.Header("token")
 	open_id := c.Ctx.Input.Header("open_id")
-	avatar := c.Ctx.Input.Header("avatar")
-	nick_name := c.Ctx.Input.Header("nick_name")
 
 	//校验token
 	client := redis.GetCommonRedis()
@@ -80,13 +78,10 @@ func (c *BaseController) Prepare() {
 		userId = cacheData.UserId
 	}
 
-
 	//下文可直接从ctx中获取数据
 	c.Ctx.Input.SetData("token", token)
 	c.Ctx.Input.SetData("open_id", open_id)
 	c.Ctx.Input.SetData("user_id", userId)
-	c.Ctx.Input.SetData("avatar", avatar)
-	c.Ctx.Input.SetData("nick_name", nick_name)
 
 }
 

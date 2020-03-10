@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"github.com/astaxie/beego/orm"
 	"math"
 )
@@ -49,7 +48,7 @@ func ArticleList(pageNum int, pageSetNum int) (list ListData, err error) {
 	//存储分页数据的切片
 	articles := new([]Article)
 	//获取分页数据
-	_, _ = qs.Limit(pageSetNum, pageSetNum*(pageNum-1)).All(articles)
+	_, _ = qs.OrderBy("-id").Limit(pageSetNum, pageSetNum*(pageNum-1)).All(articles)
 
 	return ListData{
 		List:      articles,
@@ -60,7 +59,6 @@ func ArticleList(pageNum int, pageSetNum int) (list ListData, err error) {
 }
 
 func ArticleSingleUser(pageNum int, userId int64) (list ListData, err error) {
-	fmt.Println(pageNum, userId)
 	o := orm.NewOrm()
 	qs := o.QueryTable("article").Filter("status", 1).Filter("user_id", userId)
 	count, _ := qs.Count()
@@ -69,7 +67,7 @@ func ArticleSingleUser(pageNum int, userId int64) (list ListData, err error) {
 	//存储分页数据的切片
 	articles := new([]Article)
 	//获取分页数据
-	_, _ = qs.Limit(pageSetNum, pageSetNum*(pageNum-1)).All(articles)
+	_, _ = qs.OrderBy("-id").Limit(pageSetNum, pageSetNum*(pageNum-1)).All(articles)
 
 	return ListData{
 		List:      articles,
@@ -93,8 +91,26 @@ func ArticleSearch(text string) (article *[]Article, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable("article").Filter("status", 1).Filter("title__contains", text)
 	//获取分页数据
-	_, _ = qs.Limit(20).All(articles)
+	_, _ = qs.OrderBy("-id").Limit(20).All(articles)
 
 	return articles, nil
 
+}
+
+func ArticleEvaluateIncr(id int) (num int64, err error) {
+	o := orm.NewOrm()
+	num, err = o.QueryTable("article").Filter("id", id).Update(orm.Params{
+		"evaluate_num": orm.ColValue(orm.ColAdd, 1),
+	})
+
+	return num, err
+}
+
+func ArticleLikeIncrNum(id int) (num int64, err error) {
+	o := orm.NewOrm()
+	num, err = o.QueryTable("article").Filter("id", id).Update(orm.Params{
+		"like_num": orm.ColValue(orm.ColAdd, 1),
+	})
+
+	return num, err
 }

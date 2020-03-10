@@ -21,6 +21,10 @@ type nearList struct {
 	Page int `json:"page"`
 }
 
+type userReq struct {
+	UserId int64 `json:"user_id"`
+}
+
 func (c *UserController) Update() {
 	var updateData models.User
 	req := &UserUpdateReq{}
@@ -51,4 +55,13 @@ func (c *UserController) NearList() {
 	list, _ := models.UserNearList(req.Page)
 
 	c.RenderJson(list)
+}
+
+func (c *UserController) GetUserInfo() {
+	req := &userReq{}
+	c.GetParams(req)
+
+	user, _ := models.UserGetByUserId(req.UserId)
+
+	c.RenderJson(user)
 }

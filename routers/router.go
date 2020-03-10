@@ -13,6 +13,7 @@ func init() {
 
 	beego.Router("/user/user/update", &userModules.UserController{}, "*:Update")
 	beego.Router("/user/user/near-list", &userModules.UserController{}, "*:NearList")
+	beego.Router("/user/user/get-user", &userModules.UserController{}, "*:GetUserInfo")
 
 	beego.Router("/wechat/wechat/register-user", &wechatModules.WechatController{}, "*:RegisterUser")
 
@@ -21,5 +22,9 @@ func init() {
 	beego.Router("/article/article/user-list", &articleModules.ArticleController{}, "*:UserList")
 	beego.Router("/article/article/detail", &wechatModules.WechatController{}, "*:Detail")
 	beego.Router("/article/article/search", &articleModules.ArticleController{}, "*:Search")
+	beego.Router("/article/article/add-like", &articleModules.ArticleController{}, "*:AddLike")
+
+	beego.Router("/evaluate/evaluate/add", &articleModules.EvaluateController{}, "*:Add")
+	beego.Router("/evaluate/evaluate/list", &wechatModules.WechatController{}, "*:EvaluateList")
 
 }
