@@ -1,5 +1,6 @@
 vendor
 runtime
 abana
-conf/
+conf/app.conf
+conf/redis.conf
 .idea/
