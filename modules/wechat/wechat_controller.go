@@ -120,3 +120,19 @@ func (c *WechatController) EvaluateList() {
 
 	c.RenderJson(list)
 }
+
+func (c *WechatController) ActivityList() {
+	req := &listReq{}
+	c.GetParams(req)
+	list, _ := models.ActivityList(req.Page, 10)
+
+	c.RenderJson(list)
+}
+
+func (c *WechatController) ActivityDetail() {
+	req := &detailReq{}
+	c.GetParams(req)
+	detail, _ := models.ActivityDetail(req.Id)
+
+	c.RenderJson(detail)
+}

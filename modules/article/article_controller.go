@@ -13,6 +13,7 @@ type ArticleController struct {
 type addReq struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
+	Type    string `json:"type"`
 }
 
 type userListReq struct {
@@ -31,35 +32,59 @@ type addLikeReq struct {
 
 func (c *ArticleController) Publish() {
 	var article *models.Article
+	var activity *models.Activity
+	var ret int64
 	req := &addReq{}
 	c.GetParams(req)
 
-	if req.Content == "" || req.Title == "" {
+	if req.Content == "" || req.Title == "" || req.Type == "" {
 		c.RenderJsonErr("参数", "不能为空")
 	}
 
 	userId := c.Ctx.Input.GetData("user_id").(int64)
 	user, _ := models.UserGetByUserId(userId)
 
-	article = &models.Article{
-		Title:       req.Title,
-		Content:     req.Content,
-		LikeNum:     0,
-		ShareNum:    0,
-		EvaluateNum: 0,
-		UserId:      userId,
-		CT:          time.Now().Unix(),
-		UT:          time.Now().Unix(),
-		Type:        0,
-		Status:      1, //默认1 展示
-		Avatar:      user.AvatarUrl,
-		NickName:    user.NickName,
+	if req.Type == "index" {
+		article = &models.Article{
+			Title:       req.Title,
+			Content:     req.Content,
+			LikeNum:     0,
+			ShareNum:    0,
+			EvaluateNum: 0,
+			UserId:      userId,
+			CT:          time.Now().Unix(),
+			UT:          time.Now().Unix(),
+			Type:        0,
+			Status:      1, //默认1 展示
+			Avatar:      user.AvatarUrl,
+			NickName:    user.NickName,
+		}
+		_, err := models.ArticleAdd(article)
+		if err != nil {
+			c.RenderJsonErr("", "添加有误")
+		}
+	} else {
+		activity = &models.Activity{
+			Title:       req.Title,
+			Content:     req.Content,
+			LikeNum:     0,
+			ShareNum:    0,
+			EvaluateNum: 0,
+			UserId:      userId,
+			CT:          time.Now().Unix(),
+			UT:          time.Now().Unix(),
+			Type:        0,
+			Status:      1, //默认1 展示
+			Avatar:      user.AvatarUrl,
+			NickName:    user.NickName,
+		}
+		_, err := models.ActivityAdd(activity)
+
+		if err != nil {
+			c.RenderJsonErr("", "添加有误")
+		}
 	}
 
-	ret, err := models.ArticleAdd(article)
-	if err != nil {
-		c.RenderJsonErr("", "添加有误")
-	}
 	_, _ = models.UserArticleIncrNum(userId)
 
 	c.RenderJson(ret)

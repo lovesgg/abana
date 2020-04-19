@@ -1,5 +1,5 @@
 vendor
 runtime
 abana
-conf
+conf/
 .idea/

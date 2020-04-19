@@ -13,6 +13,7 @@ func init() {
 		new(Article),
 		new(Evaluate),
 		new(MyLike),
+		new(Activity),
 	)
 }
 

@@ -24,6 +24,9 @@ func init() {
 	beego.Router("/article/article/search", &articleModules.ArticleController{}, "*:Search")
 	beego.Router("/article/article/add-like", &articleModules.ArticleController{}, "*:AddLike")
 
+	beego.Router("/activity/activity/list", &wechatModules.WechatController{}, "*:ActivityList")
+	beego.Router("/activity/activity/DETAIL", &wechatModules.WechatController{}, "*:ActivityDetail")
+
 	beego.Router("/evaluate/evaluate/add", &articleModules.EvaluateController{}, "*:Add")
 	beego.Router("/evaluate/evaluate/list", &wechatModules.WechatController{}, "*:EvaluateList")
 
